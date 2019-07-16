@@ -26,7 +26,7 @@ namespace Cybozu.CrossSync
         {
             if (string.IsNullOrEmpty(settings.FirstUrl) || string.IsNullOrEmpty(settings.SecondUrl)) return false;
             if (string.IsNullOrEmpty(settings.FirstPostfix) || string.IsNullOrEmpty(settings.SecondPostfix)) return false;
-            
+
             return true;
         }
 
@@ -222,7 +222,7 @@ namespace Cybozu.CrossSync
                 newEvent.End = srcEvent.End;
                 newEvent.AllDay = srcEvent.AllDay;
                 newEvent.StartOnly = srcEvent.StartOnly;
-                newEvent.Plan = srcEvent.Plan;
+                newEvent.Plan = srcEvent.Plan == "在宅勤務" ? "ウルトラワーク" : srcEvent.Plan;
                 newEvent.Detail = srcEvent.Detail + postfix;
                 newEvent.Description = sb.ToString();
                 newEvent.UserIds.Add(schedule.App.UserId);

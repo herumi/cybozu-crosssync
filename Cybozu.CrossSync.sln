@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBLabs.CybozuConnect", "CBL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cybozu.CrossSync", "Cybozu.CrossSync\Cybozu.CrossSync.csproj", "{D7F61698-8304-4372-A84E-231358EC6AF7}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Cybozu.CrossSync Setup", "Cybozu.CrossSync Setup\Cybozu.CrossSync Setup.vdproj", "{947768DB-62E8-4E03-A125-43B113F746FB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -101,7 +101,7 @@ namespace Cybozu.CrossSync
 
             // add new copied events
             CopyValidEvents(secondSchedule, event1to2, settings.FirstPostfix);
-            CopyValidEvents(firstSchedule, event2to1, settings.SecondPostfix);
+//            CopyValidEvents(firstSchedule, event2to1, settings.SecondPostfix);
 
             settings.LastSynchronized = DateTime.Now.ToString("o");
             settings.Save();

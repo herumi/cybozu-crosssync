@@ -151,7 +151,7 @@ namespace CBLabs.CybozuConnect
                     throw new CybozuException("Unexpected");
             }
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
             WebRequest request = WebRequest.Create(url);
             request.Method = "POST";

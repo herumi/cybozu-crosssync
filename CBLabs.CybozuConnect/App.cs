@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.IO;
 using System.Xml;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CBLabs.CybozuConnect
 {
@@ -154,6 +155,28 @@ namespace CBLabs.CybozuConnect
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
             WebRequest request = WebRequest.Create(url);
+
+            string errText = "url : " + url + '\n';
+            try {
+                // load client certificate
+                if (request is HttpWebRequest httpRequest) {
+                    using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser)) {
+                        store.Open(OpenFlags.ReadOnly);
+
+                        // search certificate corresponding to domain
+                        Uri uri = new Uri(url);
+                        X509Certificate2Collection certificates = store.Certificates.Find(X509FindType.FindBySubjectName, uri.Host, false);
+
+                        foreach (X509Certificate2 certificate in certificates) {
+                            httpRequest.ClientCertificates.Add(certificate);
+                            errText += string.Format("AAA : ClientCertificate: {0}\n", certificate.Subject);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                errText += string.Format("BBB : ClientCertificate: {0}\n", ex.Message);
+                throw new CybozuException("Unexpected error1." + errText);
+            }
             request.Method = "POST";
             request.ContentType = string.Format("application/soap+xml; charset=utf-8; action=\"{0}\"", method);
             string requestXmlString = requestXml.ToString();
@@ -162,17 +185,24 @@ namespace CBLabs.CybozuConnect
             requestStream.Write(bytes, 0, bytes.Length);
             requestStream.Close();
 
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                throw new CybozuException("Network error.");
-            }
+            string responseText = "";
 
-            Stream responseStream = response.GetResponseStream();
-            StreamReader responseReader = new StreamReader(responseStream, Encoding.UTF8);
-            string responseText = responseReader.ReadToEnd();
-            response.Close();
-            responseReader.Close();
+            try {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream responseStream = response.GetResponseStream())
+                using (StreamReader responseReader = new StreamReader(responseStream, Encoding.UTF8)) {
+                    responseText = responseReader.ReadToEnd();
+                }
+            } catch (WebException ex) {
+                if (ex.Response != null) {
+                    using (HttpWebResponse err = (HttpWebResponse)ex.Response)
+                    using (Stream errStream = err.GetResponseStream())
+                    using (StreamReader errReader = new StreamReader(errStream, Encoding.UTF8)) {
+                        errText += "CCC:" + errReader.ReadToEnd();
+                    }
+                }
+                throw new CybozuException("Unexpected error2." + errText);
+            }
 
             this.LastXmlDoc = new XmlDocument();
             try
